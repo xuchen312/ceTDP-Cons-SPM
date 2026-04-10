@@ -1,10 +1,10 @@
-# ClusterTDP-SPM
+# ceTDP-Cons-SPM
 
-**ClusterTDP-SPM** is an SPM extension for estimating true discovery proportion (TDP) using the **ClusterTDP** approach, which is an enhanced cluster inference approach that builds upon cluster extent thresholding with Gaussian random field theory, implemented in SPM.
+**ceTDP-Cons-SPM** is an SPM extension for estimating true discovery proportion (TDP) using the **ceTDP** approach, which is a more informative cluster inference approach that builds upon cluster extent thresholding with Gaussian random field theory, implemented in SPM.
 
 ## Introduction
 
-Cluster extent inference is one of the most popular approaches for detecting activations in fMRI. Although being powerful in general, this approach suffers from the so-called spatial specificity paradox. That is, each significant cluster contains at least one active voxel, but the location or amount of signal is unknown. The new method **ClusterTDP** (Goeman et al., 2023) complements and improves upon the current RFT-based cluster extent inference by quantifying the signal with a TDP estimate for every region.
+Cluster extent inference is one of the most popular approaches for detecting activations in fMRI. Although being powerful in general, this approach suffers from the so-called spatial specificity paradox. That is, each significant cluster contains at least one active voxel, but the location or amount of signal is unknown. The new method **ceTDP** (Goeman et al., 2023) complements and improves upon the current RFT-based cluster extent inference by quantifying the signal with a TDP estimate for every region.
 
 ## Installation
 
@@ -40,6 +40,20 @@ Cluster extent inference is one of the most popular approaches for detecting act
     ```r
     addpath(genpath('.../ClusterTDP-SPM'))
     ```
+    
+## **Syntax**:
+  ```matlab
+  [hReg,xSPM,SPM,TabDat] = spm_clusterTDP([xSPM,file])
+  ```
+- **Inputs** (*optional*)
+  - ```xSPM``` Thresholded SPM structure,
+  - ```file``` Character string specifying a filename (for CSV export).
+  
+- **Outputs** (*optional; must use none or all for interactive exploration*)
+  - ```hReg``` Handle to the results GUI,
+  - ```xSPM``` Thresholded SPM structure,
+  - ```SPM``` Standard SPM structure,
+  - ```TabDat``` Result summary table structure.
 
 ## Implementation
 
