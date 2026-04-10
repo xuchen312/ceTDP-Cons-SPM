@@ -1,6 +1,6 @@
-# ceTDP-Cons-SPM
+# ceTDP-cons-SPM
 
-**ceTDP-Cons-SPM** is an SPM extension for estimating true discovery proportion (TDP) using the **ceTDP** approach, which is a more informative cluster inference approach that builds upon cluster extent thresholding with Gaussian random field theory, implemented in SPM.
+**ceTDP-cons-SPM** is an SPM extension for estimating true discovery proportion (TDP) using the **ceTDP** approach, which is a more informative cluster inference approach that builds upon cluster extent thresholding with Gaussian random field theory, implemented in SPM.
 
 ## Introduction
 
@@ -27,18 +27,18 @@ Cluster extent inference is one of the most popular approaches for detecting act
   
 ### Installing ClusterTDP-SPM
 
-* Please download the latest version of ceTDP-Cons-SPM with
+* Please download the latest version of ceTDP-cons-SPM with
   ``` r
-  git clone https://github.com/xuchen312/ceTDP-Cons-SPM.git
+  git clone https://github.com/xuchen312/ceTDP-cons-SPM.git
   ```
 
-* Please add the folder for the ceTDP-Cons-SPM toolbox to the Matlab search path by following either
+* Please add the folder for the ceTDP-cons-SPM toolbox to the Matlab search path by following either
   
   + **HOME -> Set Path -> Add Folder...**
   
   + Run the below script from Matlab console
     ```r
-    addpath(genpath('.../ceTDP-Cons-SPM'))
+    addpath(genpath('.../ceTDP-cons-SPM'))
     ```
     
 ## Syntax
@@ -59,9 +59,9 @@ Cluster extent inference is one of the most popular approaches for detecting act
 
 ## Implementation
 
-* Navigate to the folder for the ceTDP-Cons-SPM toolbox with
+* Navigate to the folder for the ceTDP-cons-SPM toolbox with
   ```r
-  cd .../ceTDP-Cons-SPM
+  cd .../ceTDP-cons-SPM
   ```
   
 * Launch Matlab, or execute Matlab from the Terminal (command prompt) without the full desktop GUI while still allowing to display graphs with the command
@@ -69,7 +69,7 @@ Cluster extent inference is one of the most popular approaches for detecting act
   matlab -nodesktop -nosplash
   ```
   
-* Conduct the ceTDP-Cons inference by running the function ```spm_clusterTDP``` with at most two input arguments in the console, using either
+* Conduct the ceTDP-cons inference by running the function ```spm_clusterTDP``` with at most two input arguments in the console, using either
   
   + ```spm_clusterTDP``` to interactively query ```SPM``` and select the desired cluster thresholding options on the pop-up GUI interface
     
@@ -91,7 +91,7 @@ Cluster extent inference is one of the most popular approaches for detecting act
 
 ## Result Display
 
-The main **ceTDP-Cons-SPM** results are summarised with a result table ```TabDat``` that can be visualised from the graphics window in SPM, returned to the workspace, and exported to a CSV file. An example of such summary tables is as below.
+The main **ceTDP-cons-SPM** results are summarised with a result table ```TabDat``` that can be visualised from the graphics window in SPM, returned to the workspace, and exported to a CSV file. An example of such summary tables is as below.
 ```
 Statistics: p-values adjusted for search volume
 ================================================================================
