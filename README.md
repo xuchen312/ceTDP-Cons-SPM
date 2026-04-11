@@ -1,6 +1,6 @@
 # ceTDP-cons-SPM
 
-**ceTDP-cons-SPM** is an SPM extension for estimating true discovery proportion (TDP) using the **ceTDP** approach, which is a more informative cluster inference approach that builds upon cluster extent thresholding with Gaussian random field theory, implemented in SPM.
+**ceTDP-cons-SPM** is an SPM extension for estimating true discovery proportion (TDP) using the **ceTDP-cons** approach, which is a more informative cluster inference approach that builds upon cluster extent thresholding with Gaussian random field theory, implemented in SPM.
 
 ## Introduction
 
@@ -25,7 +25,7 @@ Cluster extent inference is one of the most popular approaches for detecting act
     addpath(genpath('.../spm12'));
     ```
   
-### Installing ClusterTDP-SPM
+### Installing ceTDP-cons-SPM
 
 * Please download the latest version of ceTDP-cons-SPM with
   ``` r
@@ -59,7 +59,7 @@ Cluster extent inference is one of the most popular approaches for detecting act
 
 ## Implementation
 
-* Navigate to the folder for the ceTDP-cons-SPM toolbox with
+* Navigate to the folder for the **ceTDP-cons-SPM** toolbox with
   ```r
   cd .../ceTDP-cons-SPM
   ```
@@ -118,7 +118,7 @@ Volume: 2866384 = 358298 voxels = 2905.8 resels
 Voxel size: 2.0 2.0 2.0 mm mm mm; (resel = 116.13 voxels)
 ================================================================================
 ```
-Here, this summary table is highly related to the SPM12 statistics results table, and the summary variable ```TDP(lb)``` shows the lower bound of TDP bound, derived using ClusterTDP, for each significant cluster based on cluster extent inference.
+Here, this summary table is highly related to the SPM12 statistics results table, and the summary variable ```TDP(lb)``` shows the lower bound of TDP bound, derived using **ceTDP-cons**, for each significant cluster based on cluster extent inference.
 
 ## References
 
