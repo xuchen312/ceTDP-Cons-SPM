@@ -1,8 +1,8 @@
-function varargout = spm_clusterTDP_list(varargin)
+function varargout = spm_ceTDP_cons_list(varargin)
 % Display an analysis of SPM{.}
-% FORMAT TabDat = spm_clusterTDP_list('List',xSPM,hReg,[Num,Dis,Str])
+% FORMAT TabDat = spm_ceTDP_cons_list('List',xSPM,hReg,[Num,Dis,Str])
 % Summary list of local maxima for entire volume of interest
-% FORMAT TabDat = spm_clusterTDP_list('ListCluster',xSPM,hReg,[Num,Dis,Str])
+% FORMAT TabDat = spm_ceTDP_cons_list('ListCluster',xSPM,hReg,[Num,Dis,Str])
 % List of local maxima for a single suprathreshold cluster
 %
 % xSPM    - structure containing SPM, distribution & filtering details
@@ -30,7 +30,7 @@ function varargout = spm_clusterTDP_list(varargin)
 %
 % (see spm_getSPM.m for further details of xSPM structures)
 %
-% hReg   - Handle of results section XYZ registry (see spm_clusterTDP_ui.m)
+% hReg   - Handle of results section XYZ registry (see spm_ceTDP_cons_ui.m)
 %
 % Num    - number of maxima per cluster [3]
 % Dis    - distance among clusters {mm} [8]
@@ -47,21 +47,21 @@ function varargout = spm_clusterTDP_list(varargin)
 %
 %                           ----------------
 %
-% FORMAT spm_clusterTDP_list('TxtList',TabDat,c)
+% FORMAT spm_ceTDP_cons_list('TxtList',TabDat,c)
 % Prints a tab-delimited text version of the table
 % TabDat - Structure containing table data (format as above)
 % c      - Column of table data to start text table at
 %          (E.g. c=3 doesn't print set-level results contained in columns 1 & 2)
 %                           ----------------
 %
-% FORMAT spm_clusterTDP_list('SetCoords',xyz,hAx,hReg)
+% FORMAT spm_ceTDP_cons_list('SetCoords',xyz,hAx,hReg)
 % Highlighting of table co-ordinates (used by results section registry)
 % xyz    - 3-vector of new co-ordinate
 % hAx    - table axis (the registry object for tables)
 % hReg   - Handle of caller (not used)
 %__________________________________________________________________________
 %
-% spm_clusterTDP_list characterizes SPMs (thresholded at u and k) in terms
+% spm_ceTDP_cons_list characterizes SPMs (thresholded at u and k) in terms
 % of excursion sets (a collection of face, edge and vertex connected
 % subsets or clusters).  The corrected significance of the results are
 % based on set, cluster and voxel-level inferences using distributional
@@ -114,13 +114,13 @@ function varargout = spm_clusterTDP_list(varargin)
 % Copyright (C) 1999-2015 Wellcome Trust Centre for Neuroimaging
 
 % Karl Friston, Andrew Holmes, Guillaume Flandin
-% $Id: spm_clusterTDP_list.m 6950 2016-11-25 12:05:08Z guillaume $
+% $Id: spm_ceTDP_cons_list.m 6950 2016-11-25 12:05:08Z guillaume $
 
 
 %==========================================================================
 switch lower(varargin{1}), case 'list'                               %-List
 %==========================================================================
-% FORMAT TabDat = spm_clusterTDP_list('List',xSPM,hReg,[Num,Dis,Str])
+% FORMAT TabDat = spm_ceTDP_cons_list('List',xSPM,hReg,[Num,Dis,Str])
 
     %-Parse arguments
     %----------------------------------------------------------------------
@@ -133,9 +133,9 @@ switch lower(varargin{1}), case 'list'                               %-List
     %----------------------------------------------------------------------
     spm('Pointer','Watch')
     
-    TabDat = spm_clusterTDP_list('Table',xSPM,varargin{4:end});
+    TabDat = spm_ceTDP_cons_list('Table',xSPM,varargin{4:end});
     
-    spm_clusterTDP_list('Display',TabDat,hReg);
+    spm_ceTDP_cons_list('Display',TabDat,hReg);
     
     spm('Pointer','Arrow')
     
@@ -147,7 +147,7 @@ switch lower(varargin{1}), case 'list'                               %-List
 %==========================================================================
 case 'table'                                                        %-Table
 %==========================================================================
-    % FORMAT TabDat = spm_clusterTDP_list('table',xSPM,[Num,Dis,Str])
+    % FORMAT TabDat = spm_ceTDP_cons_list('table',xSPM,[Num,Dis,Str])
     
     %-Parse arguments
     %----------------------------------------------------------------------
@@ -224,6 +224,19 @@ case 'table'                                                        %-Table
         try, QPc = sort(QPc(:)); end      % Needed for cluster FDR
     end
 
+    %-Get minimum significant cluster size
+    %----------------------------------------------------------------------
+    try
+        minClusSz = xSPM.minClusSz;
+        minClusSz_type = xSPM.minClusSz_type;
+    catch
+        warning(sprintf( ...
+            ['Cluster-extent threshold cannot be found in ''xSPM''.\n' ...
+             '         It will be computed automatically based on RFT.\n']));
+        minClusSz = spm_ceTDP_minsize(xSPM);
+        minClusSz_type = 'Parametric';
+    end
+
     % Choose between voxel-wise and topological FDR
     %----------------------------------------------------------------------
     topoFDR = spm_get_defaults('stats.topoFDR');
@@ -235,21 +248,37 @@ case 'table'                                                        %-Table
     %-Table Headers
     %----------------------------------------------------------------------
     TabDat.tit = Title;
-    
-    TabDat.hdr = {...
-        'set',      'p',           '\itp';...                  % 1
-        'set',      'c',           '\itc';...                  % 2
-        'cluster',  'p(FWE)',      '\itp\rm_{FWE-corr}';...    % 3
-        'cluster',  'p(FDR)',      '\itq\rm_{FDR-corr}';...    % 4
-        'cluster',  'k',           '\itk\rm_E';...             % 5
-        %'cluster',  'p(unc)',      '\itp\rm_{uncorr}';...   
-        'cluster',  'TDP(lb)',     '\it{TDP}\rm_{lb}';...      % 6
-        'peak',     'p(FWE)',      '\itp\rm_{FWE-corr}';...    % 7
-        'peak',     'p(FDR)',      '\itq\rm_{FDR-corr}';...    % 8
-        'peak',      STAT,         sprintf('\\it%s',STAT);...  % 9
-        'peak',     'Z',           '(\itZ\rm_E)';...           % 10
-        'peak',     'p(unc)',      '\itp\rm_{uncorr}';...      % 11
-        '',         'x,y,z {mm}',  [units{:}]}';...            % 12
+    if strcmp(minClusSz_type,'Parametric')
+        TabDat.hdr = {...
+            'set',      'p',           '\itp';...                  % 1
+            'set',      'c',           '\itc';...                  % 2
+            'cluster',  'p(FWE)',      '\itp\rm_{FWE-RFT}';...     % 3
+            'cluster',  'p(FDR)',      '\itq\rm_{FDR-corr}';...    % 4
+            'cluster',  'k',           '\itk\rm_E';...             % 5
+            %'cluster',  'p(unc)',      '\itp\rm_{uncorr}';...
+            'cluster',  'TDP(lb)',     '\it{TDP}\rm_{RFT}';...     % 6
+            'peak',     'p(FWE)',      '\itp\rm_{FWE-RFT}';...     % 7
+            'peak',     'p(FDR)',      '\itq\rm_{FDR-corr}';...    % 8
+            'peak',      STAT,         sprintf('\\it%s',STAT);...  % 9
+            'peak',     'Z',           '(\itZ\rm_E)';...           % 10
+            'peak',     'p(unc)',      '\itp\rm_{uncorr}';...      % 11
+            '',         'x,y,z {mm}',  [units{:}]}';...            % 12
+    else
+        TabDat.hdr = {...
+            'set',      'p',           '\itp';...                  % 1
+            'set',      'c',           '\itc';...                  % 2
+            'cluster',  'p(FWE)',      '\itp\rm_{FWE-RFT}';...     % 3
+            'cluster',  'p(FDR)',      '\itq\rm_{FDR-corr}';...    % 4
+            'cluster',  'k',           '\itk\rm_E';...             % 5
+            %'cluster',  'p(unc)',      '\itp\rm_{uncorr}';...
+            'cluster',  'TDP(lb)',     '\it{TDP}\rm_{Perm}';...    % 6
+            'peak',     'p(FWE)',      '\itp\rm_{FWE-RFT}';...     % 7
+            'peak',     'p(FDR)',      '\itq\rm_{FDR-corr}';...    % 8
+            'peak',      STAT,         sprintf('\\it%s',STAT);...  % 9
+            'peak',     'Z',           '(\itZ\rm_E)';...           % 10
+            'peak',     'p(unc)',      '\itp\rm_{uncorr}';...      % 11
+            '',         'x,y,z {mm}',  [units{:}]}';...            % 12
+    end
         
     %-Coordinate Precisions
     %----------------------------------------------------------------------
@@ -353,13 +382,7 @@ case 'table'                                                        %-Table
         end
      else
         TabDat.ftr = {};
-    end 
-
-
-    %-Compute minimum significant cluster size
-    %----------------------------------------------------------------------
-    minClusSz = spm_clusterTDP_minsize(xSPM);
-
+    end
 
     %-Characterize excursion set in terms of maxima
     % (sorted on Z values and grouped by regions)
@@ -476,7 +499,7 @@ case 'table'                                                        %-Table
                 Ze  = spm_invNcdf(1 - Pz);
             end
 
-            %-TDP lower bound
+            %-ceTDP lower bound
             %--------------------------------------------------------------
             %--- for cluster i,
             %--- region A(i) has N(i) voxels, whose positions are in L{i}.
@@ -487,8 +510,8 @@ case 'table'                                                        %-Table
             % A(i)     - region number (c=max(A))
             % L{i}     - 3xN(i) array of voxel [X Y Z] coordinates for N(i)
             %            voxels
-            tdp = spm_clusterTDP_lb(L{A(i)}',minClusSz-1)/N(i);
-            %tdp = spm_clusterTDP_lb(L{i}',round(uc(3))-1)/N(i);
+            tdp = spm_ceTDP_cons_lb(L{A(i)}',minClusSz-1)/N(i);
+            %tdp = spm_ceTDP_cons_lb(L{i}',round(uc(3))-1)/N(i);
         else
             Pz      = [];
             Pu      = [];
@@ -563,10 +586,10 @@ case 'table'                                                        %-Table
     
     varargout = {TabDat};
     
-    %======================================================================
-    case 'display'                       %-Display table in Graphics window
-    %======================================================================
-    % FORMAT spm_clusterTDP_list('display',TabDat,hReg)
+  %======================================================================
+  case 'display'                       %-Display table in Graphics window
+  %======================================================================
+    % FORMAT spm_ceTDP_cons_list('display',TabDat,hReg)
     
     %-Parse arguments
     %----------------------------------------------------------------------
@@ -576,7 +599,7 @@ case 'table'                                                        %-Table
     
     %-Get current location (to highlight selected voxel in table)
     %----------------------------------------------------------------------
-    xyzmm = spm_clusterTDP_ui('GetCoords');
+    xyzmm = spm_ceTDP_cons_ui('GetCoords');
     
     %-Setup Graphics panel
     %----------------------------------------------------------------------
@@ -588,7 +611,7 @@ case 'table'                                                        %-Table
         Fgraph = spm_figure('GetWin','Graphics');
         ht = 0.4; bot = 0.1;
     end
-    spm_clusterTDP_ui('Clear',Fgraph)
+    spm_ceTDP_cons_ui('Clear',Fgraph)
     FS     = spm('FontSizes');           %-Scaled font sizes
     PF     = spm_platform('fonts');      %-Font names (for this platform)
     
@@ -787,7 +810,7 @@ case 'table'                                                        %-Table
         'XColor','w','YColor','w')
     uimenu(h,'Label','Print text table',...
         'CallBack',...
-        'spm_clusterTDP_list(''txtlist'',get(get(gcbo,''Parent''),''UserData''),3)',...
+        'spm_ceTDP_cons_list(''txtlist'',get(get(gcbo,''Parent''),''UserData''),3)',...
         'Interruptible','off','BusyAction','Cancel');
     uimenu(h,'Label','Extract table data structure',...
         'CallBack','TabDat=get(get(gcbo,''Parent''),''UserData'')',...
@@ -795,12 +818,12 @@ case 'table'                                                        %-Table
     if ispc
         uimenu(h,'Label','Export to Excel',...
         'CallBack',...
-        'spm_clusterTDP_list(''xlslist'',get(get(gcbo,''Parent''),''UserData''));',...
+        'spm_ceTDP_cons_list(''xlslist'',get(get(gcbo,''Parent''),''UserData''));',...
         'Interruptible','off','BusyAction','Cancel');
     end
     uimenu(h,'Label','Export to CSV file',...
         'CallBack',...
-        'spm_clusterTDP_list(''csvlist'',get(get(gcbo,''Parent''),''UserData''));',...
+        'spm_ceTDP_cons_list(''csvlist'',get(get(gcbo,''Parent''),''UserData''));',...
         'Interruptible','off','BusyAction','Cancel');
     % Export to NIDM-Results using xSPM/TabDat from base workspace
     h1 = uimenu(h,'Label','Export to NIDM-Results');
@@ -816,14 +839,14 @@ case 'table'                                                        %-Table
     %-Setup registry
     %----------------------------------------------------------------------
     set(hAx,'UserData',struct('hReg',hReg,'HlistXYZ',HlistXYZ,'HlistClust',HlistClust))
-    spm_XYZreg('Add2Reg',hReg,hAx,'spm_clusterTDP_list');
+    spm_XYZreg('Add2Reg',hReg,hAx,'spm_ceTDP_cons_list');
 
     varargout = {};
     
     %======================================================================
     case 'listcluster'                      %-List for current cluster only
     %======================================================================
-    % FORMAT TabDat = spm_clusterTDP_list('ListCluster',xSPM,hReg,[Num,Dis,Str])
+    % FORMAT TabDat = spm_ceTDP_cons_list('ListCluster',xSPM,hReg,[Num,Dis,Str])
 
         %-Parse arguments
         %------------------------------------------------------------------
@@ -858,8 +881,8 @@ case 'table'                                                        %-Table
             %-Jump to voxel nearest current location
             %--------------------------------------------------------------
             [xyzmm,i] = spm_XYZreg('NearestXYZ',...
-                spm_clusterTDP_ui('GetCoords'),xSPM.XYZmm);
-            spm_clusterTDP_ui('SetCoords',xSPM.XYZmm(:,i));
+                spm_ceTDP_cons_ui('GetCoords'),xSPM.XYZmm);
+            spm_ceTDP_cons_ui('SetCoords',xSPM.XYZmm(:,i));
 
             %-Find selected cluster
             %--------------------------------------------------------------
@@ -872,13 +895,13 @@ case 'table'                                                        %-Table
 
         %-Call 'list' functionality to produce table
         %------------------------------------------------------------------
-        varargout = { spm_clusterTDP_list('list',xSPM,hReg,Num,Dis,Str) };
+        varargout = { spm_ceTDP_cons_list('list',xSPM,hReg,Num,Dis,Str) };
 
 
     %======================================================================
     case 'txtlist'                                 %-Print ASCII text table
     %======================================================================
-    % FORMAT spm_clusterTDP_list('TxtList',TabDat,c)
+    % FORMAT spm_ceTDP_cons_list('TxtList',TabDat,c)
 
         if nargin<2, error('Not enough input arguments.'); end
         if nargin<3, c = 1; else c = varargin{3}; end
@@ -919,7 +942,7 @@ case 'table'                                                        %-Table
     %======================================================================
     case 'xlslist'                                  %-Export table to Excel
     %======================================================================
-    % FORMAT spm_clusterTDP_list('XLSList',TabDat,ofile)
+    % FORMAT spm_ceTDP_cons_list('XLSList',TabDat,ofile)
 
         if nargin<2, error('Not enough input arguments.'); end
         TabDat = varargin{2};
@@ -938,7 +961,7 @@ case 'table'                                                        %-Table
     %======================================================================
     case 'csvlist'            %-Export table to comma-separated values file
     %======================================================================
-    % FORMAT spm_clusterTDP_list('CSVList',TabDat,ofile)
+    % FORMAT spm_ceTDP_cons_list('CSVList',TabDat,ofile)
 
         if nargin<2, error('Not enough input arguments.'); end
         TabDat = varargin{2};
@@ -963,7 +986,7 @@ case 'table'                                                        %-Table
     %======================================================================
     case 'setcoords'                                    %-Coordinate change
     %======================================================================
-    % FORMAT spm_clusterTDP_list('SetCoords',xyz,hAx,hReg)
+    % FORMAT spm_ceTDP_cons_list('SetCoords',xyz,hAx,hReg)
         if nargin<3, error('Not enough input arguments.'); end
         hAx      = varargin{3};
         xyz      = varargin{2};
@@ -986,7 +1009,7 @@ case 'table'                                                        %-Table
     %======================================================================
     case 'label'                                     %-Display atlas labels
     %======================================================================
-    % FORMAT spm_clusterTDP_list('label',atlas)
+    % FORMAT spm_ceTDP_cons_list('label',atlas)
     %-Use atlas to label suprathreshold features
     
     fprintf('*** Use atlas labelling with great caution ***\n');
@@ -997,7 +1020,7 @@ case 'table'                                                        %-Table
 
     % F  = spm_figure('GetWin','Satellite');
     % spm_figure('Focus',F);
-    % spm_clusterTDP_ui('Clear',F);
+    % spm_ceTDP_cons_ui('Clear',F);
     % 
     % %-Display activation labels
     % %----------------------------------------------------------------------
