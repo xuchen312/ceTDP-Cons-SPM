@@ -1,10 +1,10 @@
-function varargout = spm_clusterTDP(varargin)
+function varargout = spm_ceTDP_cons(varargin)
 %
-% Run clusterTDP inference
+% Run ceTDP-con inference
 %
 % =========================================================================
-% FORMAT:                          spm_clusterTDP([xSPM,file])
-%         [hReg,xSPM,SPM,TabDat] = spm_clusterTDP([xSPM,file])
+% FORMAT:                          spm_ceTDP_cons([xSPM,file])
+%         [hReg,xSPM,SPM,TabDat] = spm_ceTDP_cons([xSPM,file])
 % -------------------------------------------------------------------------
 % Inputs (optional; if empty or not specified, the default is used):
 %  -   xSPM: an input structure containing SPM, distribution & filtering
@@ -22,7 +22,7 @@ function varargout = spm_clusterTDP(varargin)
 %  -    SPM: an SPM structure
 %            (see spm_getSPM.m for details)
 %  - TabDat: a structure containing table data with fields
-%            (see spm_clusterTDP_list.m for details)
+%            (see spm_ceTDP_cons_list.m for details)
 % =========================================================================
 %
 
@@ -81,23 +81,34 @@ end
 %-Query SPM and setup GUI
 %----------------------------------------------------------------------
 if exist('xSPM','var')
-    [hReg,xSPM,SPM] = spm_clusterTDP_ui('Setup',xSPM);
+    [hReg,xSPM,SPM] = spm_ceTDP_cons_ui('Setup',xSPM);
 else
-    [hReg,xSPM,SPM] = spm_clusterTDP_ui('Setup');
+    [hReg,xSPM,SPM] = spm_ceTDP_cons_ui('Setup');
 end
+
+%-Get minimum significant cluster size (from Stage 1)
+%----------------------------------------------------------------------
+minClusSz = spm_input('cluster-extent threshold k from Stage 1', 1, 'e', '0');
+options = {'Parametric','Nonparametric'};
+minClusSz_type_id = spm_input('Inference for deriving k', '+1', 'm', ...
+    options, [1 2]);
+minClusSz_type = options{minClusSz_type_id};
+
+xSPM.minClusSz = minClusSz;
+xSPM.minClusSz_type = minClusSz_type;
 
 %-Compute result summary table "TabDat"
 %----------------------------------------------------------------------
-TabDat = spm_clusterTDP_list('List',xSPM,hReg);
+TabDat = spm_ceTDP_cons_list('List',xSPM,hReg);
 
 %-Display table "TabDat"
 %----------------------------------------------------------------------
-%spm_clusterTDP_list('TxtList',TabDat);
+%spm_ceTDP_cons_list('TxtList',TabDat);
 
 %-Check output file name & write result table to a csv file
 %----------------------------------------------------------------------
 if exist('file','var')
-    spm_clusterTDP_list('CSVList',TabDat,file);
+    spm_ceTDP_cons_list('CSVList',TabDat,file);
 end
 
 %-Return outputs for interactive exploration of results in control panel
