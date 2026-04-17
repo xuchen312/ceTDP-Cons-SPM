@@ -61,7 +61,7 @@ if nargin == 1
         elseif ischar(varargin{1})
             file = varargin{1};
         else
-            error(['Unrecognised input: ' varargin{1}]);
+            error('Unrecognised input: %s', varargin{1});
         end
     end
 end
