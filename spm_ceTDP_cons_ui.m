@@ -1,6 +1,6 @@
-function varargout = spm_clusterTDP_ui(varargin)
+function varargout = spm_ceTDP_cons_ui(varargin)
 % User interface for SPM/PPM results: Display and analysis of regional effects
-% FORMAT [hReg,xSPM,SPM] = spm_clusterTDP_ui('Setup',[xSPM])
+% FORMAT [hReg,xSPM,SPM] = spm_ceTDP_cons_ui('Setup',[xSPM])
 %
 % hReg   - handle of MIP XYZ registry object
 %          (see spm_XYZreg.m for details)
@@ -45,15 +45,15 @@ function varargout = spm_clusterTDP_ui(varargin)
 %
 % p-values buttons:
 %   (i) volume   - Tabulates p-values and statistics for entire volume.
-%                                            - see spm_clusterTDP_list.m
+%                                            - see spm_ceTDP_cons_list.m
 %  (ii) cluster  - Tabulates p-values and statistics for nearest cluster.
 %                - Note that the cursor will jump to the nearest
 %                  suprathreshold voxel, if it is not already at a
 %                  location with suprathreshold statistic.
-%                                            - see spm_clusterTDP_list.m
+%                                            - see spm_ceTDP_cons_list.m
 % (iii)  S.V.C   - Small Volume Correction:
 %                  Tabulates p-values corrected for a small specified
-%                  volume of interest. (Tabulation by spm_clusterTDP_list.m)
+%                  volume of interest. (Tabulation by spm_ceTDP_cons_list.m)
 %                                            - see spm_VOI.m
 %
 % Data extraction buttons:
@@ -116,7 +116,7 @@ function varargout = spm_clusterTDP_ui(varargin)
 %
 %                           ----------------
 %
-% In addition to setting up the results section, spm_clusterTDP_ui.m sets
+% In addition to setting up the results section, spm_ceTDP_cons_ui.m sets
 % up the results section GUI and services the CallBacks. FORMAT
 % specifications for embedded CallBack functions are given in the main
 % body of the code.
@@ -124,7 +124,7 @@ function varargout = spm_clusterTDP_ui(varargin)
 % Copyright (C) 1996-2018 Wellcome Trust Centre for Neuroimaging
  
 % Karl Friston & Andrew Holmes
-% $Id: spm_clusterTDP_ui.m 7388 2018-08-06 12:04:26Z guillaume $
+% $Id: spm_ceTDP_cons_ui.m 7388 2018-08-06 12:04:26Z guillaume $
  
  
 %==========================================================================
@@ -133,21 +133,21 @@ function varargout = spm_clusterTDP_ui(varargin)
 %( This is a multi function function, the first argument is an action  )
 %( string, specifying the particular action function to take.          )
 %
-% spm_clusterTDP_ui sets up and handles the SPM results graphical user
+% spm_ceTDP_cons_ui sets up and handles the SPM results graphical user
 % interface, initialising an XYZ registry (see spm_XYZreg.m) to co-ordinate
 % locations between various location controls.
 %
 %__________________________________________________________________________
 %
-% FORMAT [hreg,xSPM,SPM] = spm_clusterTDP_ui('Setup')
+% FORMAT [hreg,xSPM,SPM] = spm_ceTDP_cons_ui('Setup')
 % Query SPM and setup GUI. 
 %
-% FORMAT [hreg,xSPM,SPM] = spm_clusterTDP_ui('Setup',xSPM)
+% FORMAT [hreg,xSPM,SPM] = spm_ceTDP_cons_ui('Setup',xSPM)
 % Query SPM and setup GUI using a xSPM input structure. This allows to run
 % results setup without user interaction. See spm_getSPM for details of
 % allowed fields.
 %
-% FORMAT hReg = spm_clusterTDP_ui('SetupGUI',M,DIM,xSPM,Finter)
+% FORMAT hReg = spm_ceTDP_cons_ui('SetupGUI',M,DIM,xSPM,Finter)
 % Setup results GUI in Interactive window
 % M       - 4x4 transformation matrix relating voxel to "real" co-ordinates
 % DIM     - 3 vector of image X, Y & Z dimensions
@@ -157,7 +157,7 @@ function varargout = spm_clusterTDP_ui(varargin)
 % Finter  - handle (or 'Tag') of Interactive window (default 'Interactive')
 % hReg    - handle of XYZ registry object
 %
-% FORMAT spm_clusterTDP_ui('DrawButts',hReg,DIM,Finter,WS,FS)
+% FORMAT spm_ceTDP_cons_ui('DrawButts',hReg,DIM,Finter,WS,FS)
 % Draw GUI buttons
 % hReg    - handle of XYZ registry object
 % DIM     - 3 vector of image X, Y & Z dimensions
@@ -165,7 +165,7 @@ function varargout = spm_clusterTDP_ui(varargin)
 % WS      - WinScale  [Default spm('WinScale') ]
 % FS      - FontSizes [Default spm('FontSizes')]
 %
-% FORMAT hFxyz = spm_clusterTDP_ui('DrawXYZgui',M,DIM,xSPM,xyz,hReg)
+% FORMAT hFxyz = spm_ceTDP_cons_ui('DrawXYZgui',M,DIM,xSPM,xyz,hReg)
 % Setup editable XYZ control widgets at foot of Interactive window
 % M      - 4x4 transformation matrix relating voxel to "real" co-ordinates
 % DIM    - 3 vector of image X, Y & Z dimensions
@@ -176,22 +176,22 @@ function varargout = spm_clusterTDP_ui(varargin)
 % hReg   - handle of XYZ registry object
 % hFxyz  - handle of XYZ control - the frame containing the edit widgets
 %
-% FORMAT spm_clusterTDP_ui('EdWidCB')
+% FORMAT spm_ceTDP_cons_ui('EdWidCB')
 % Callback for editable XYZ control widgets
 %
-% FORMAT spm_clusterTDP_ui('UpdateSPMval',hFxyz)
-% FORMAT spm_clusterTDP_ui('UpdateSPMval',UD)
+% FORMAT spm_ceTDP_cons_ui('UpdateSPMval',hFxyz)
+% FORMAT spm_ceTDP_cons_ui('UpdateSPMval',UD)
 % Updates SPM value string in Results GUI (using data from UserData of hFxyz)
 % hFxyz - handle of frame enclosing widgets - the Tag object for this control
 % UD    - XYZ data structure (UserData of hFxyz).
 %
-% FORMAT xyz = spm_clusterTDP_ui('GetCoords',hFxyz)
+% FORMAT xyz = spm_ceTDP_cons_ui('GetCoords',hFxyz)
 % Get current co-ordinates from editable XYZ control
 % hFxyz - handle of frame enclosing widgets - the Tag object for this control
 % xyz   - current co-ordinates {mm}
 % NB: When using the results section, should use XYZregistry to get/set location
 %
-% FORMAT [xyz,d] = spm_clusterTDP_ui('SetCoords',xyz,hFxyz,hC)
+% FORMAT [xyz,d] = spm_ceTDP_cons_ui('SetCoords',xyz,hFxyz,hC)
 % Set co-ordinates to XYZ widget
 % xyz   - (Input) desired co-ordinates {mm}
 % hFxyz - handle of XYZ control - the frame containing the edit widgets
@@ -203,7 +203,7 @@ function varargout = spm_clusterTDP_ui(varargin)
 % d     - Euclidean distance between desired and set co-ordinates.
 % NB: When using the results section, should use XYZregistry to get/set location
 %
-% FORMAT hFxyz = spm_clusterTDP_ui('FindXYZframe',h)
+% FORMAT hFxyz = spm_ceTDP_cons_ui('FindXYZframe',h)
 % Find/check XYZ edit widgets frame handle, 'Tag'ged 'hFxyz'
 % h     - handle of frame enclosing widgets, or containing figure [default gcf]
 %         If ischar(h), then uses spm_figure('FindWin',h) to locate named figures
@@ -211,14 +211,14 @@ function varargout = spm_clusterTDP_ui(varargin)
 %         Errors if hFxyz is not an XYZ widget control, or a figure containing
 %         a unique such control
 %
-% FORMAT spm_clusterTDP_ui('PlotUi',hAx)
+% FORMAT spm_ceTDP_cons_ui('PlotUi',hAx)
 % GUI for adjusting plot attributes - Sets up controls just above results GUI
 % hAx - handle of axes to work with
 %
-% FORMAT spm_clusterTDP_ui('PlotUiCB')
+% FORMAT spm_ceTDP_cons_ui('PlotUiCB')
 % CallBack handler for Plot attribute GUI
 %
-% FORMAT Fgraph = spm_clusterTDP_ui('Clear',F,mode)
+% FORMAT Fgraph = spm_ceTDP_cons_ui('Clear',F,mode)
 % Clears results subpane of Graphics window, deleting all but semi-permanent
 % results section stuff
 % F      - handle of Graphics window [Default spm_figure('FindWin','Graphics')]
@@ -228,10 +228,10 @@ function varargout = spm_clusterTDP_ui(varargin)
 %                        (which is set by `hold on`)
 % Fgraph - handle of Graphics window
 %
-% FORMAT hMP = spm_clusterTDP_ui('LaunchMP',M,DIM,hReg,hBmp)
+% FORMAT hMP = spm_ceTDP_cons_ui('LaunchMP',M,DIM,hReg,hBmp)
 % Prototype callback handler for integrating MultiPlanar toolbox
 %
-% FORMAT spm_clusterTDP_ui('Delete',h)
+% FORMAT spm_ceTDP_cons_ui('Delete',h)
 % deletes HandleGraphics objects, but only if they're valid, thus avoiding
 % warning statements from MATLAB.
 %__________________________________________________________________________
@@ -339,7 +339,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %----------------------------------------------------------------------
     spm_clf(Finter);
     spm('FigName',['SPM{',xSPM.STAT,'}: Results'],Finter,CmdLine);
-    hReg      = spm_clusterTDP_ui('SetupGUI',M,DIM,xSPM,Finter);
+    hReg      = spm_ceTDP_cons_ui('SetupGUI',M,DIM,xSPM,Finter);
  
     %-Setup design interrogation menu
     %----------------------------------------------------------------------
@@ -347,12 +347,12 @@ switch lower(Action), case 'setup'                         %-Set up results
  
     %-Setup contrast menu
     %----------------------------------------------------------------------
-    hConUI    = spm_clusterTDP_ui('SetupConMenu',xSPM,SPM,Finter);
+    hConUI    = spm_ceTDP_cons_ui('SetupConMenu',xSPM,SPM,Finter);
     
     %-Atlas menu
     %----------------------------------------------------------------------
     if isequal(units,{'mm' 'mm' 'mm'})
-        hAtlasUI = spm_clusterTDP_ui('SetupAtlasMenu',Finter);
+        hAtlasUI = spm_ceTDP_cons_ui('SetupAtlasMenu',Finter);
     end
     
     %-Setup Maximum intensity projection (MIP) & register
@@ -517,7 +517,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'setupgui'                            %-Set up results section GUI
     %======================================================================
-        % hReg = spm_clusterTDP_ui('SetupGUI',M,DIM,xSPM,Finter)
+        % hReg = spm_ceTDP_cons_ui('SetupGUI',M,DIM,xSPM,Finter)
         if nargin < 5, Finter='Interactive'; else Finter = varargin{5}; end
         if nargin < 4, error('Insufficient arguments'), end
         M      = varargin{2};
@@ -543,12 +543,12 @@ switch lower(Action), case 'setup'                         %-Set up results
  
         %-Setup editable XYZ widgets & cross register with registry
         %------------------------------------------------------------------
-        hFxyz      = spm_clusterTDP_ui('DrawXYZgui',M,DIM,varargin{4},xyz,hReg);
-        spm_XYZreg('XReg',hReg,hFxyz,'spm_clusterTDP_ui');
+        hFxyz      = spm_ceTDP_cons_ui('DrawXYZgui',M,DIM,varargin{4},xyz,hReg);
+        spm_XYZreg('XReg',hReg,hFxyz,'spm_ceTDP_cons_ui');
  
         %-Set up buttons for results functions
         %------------------------------------------------------------------
-        spm_clusterTDP_ui('DrawButts',hReg,DIM,Finter,WS,FS);
+        spm_ceTDP_cons_ui('DrawButts',hReg,DIM,Finter,WS,FS);
 
         if spm_check_version('matlab','7.11') ~= 0
             drawnow; % required to force "ratio locking"
@@ -560,7 +560,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'drawbutts'   %-Draw results section buttons in Interactive window
     %======================================================================
-        % spm_clusterTDP_ui('DrawButts',hReg,DIM,Finter,WS,FS)
+        % spm_ceTDP_cons_ui('DrawButts',hReg,DIM,Finter,WS,FS)
         %
         if nargin < 3, error('Insufficient arguments'), end
         hReg = varargin{2};
@@ -585,7 +585,7 @@ switch lower(Action), case 'setup'                         %-Set up results
             'FontSize',FS(10),...
             'ToolTipString',...
             'Tabulate summary of local maxima, p-values & statistics',...
-            'Callback','TabDat = spm_clusterTDP_list(''List'',xSPM,hReg);',...
+            'Callback','TabDat = spm_ceTDP_cons_list(''List'',xSPM,hReg);',...
             'Interruptible','on','Enable','on',...
             'Position',[005 055 100 020].*WS);
         uicontrol('Parent',hPan,'Style','PushButton','String','current cluster',...
@@ -593,7 +593,7 @@ switch lower(Action), case 'setup'                         %-Set up results
             'FontSize',FS(10),...
             'ToolTipString',...
             'Tabulate p-values & statistics for local maxima of nearest cluster',...
-            'Callback','TabDat = spm_clusterTDP_list(''ListCluster'',xSPM,hReg);',...
+            'Callback','TabDat = spm_ceTDP_cons_list(''ListCluster'',xSPM,hReg);',...
             'Interruptible','on','Enable','on',...
             'Position',[005 030 100 020].*WS);
         uicontrol('Parent',hPan,'Style','PushButton','String','small volume',...
@@ -741,7 +741,7 @@ switch lower(Action), case 'setup'                         %-Set up results
         uicontrol('Parent',hReg,'Style','PushButton','String','clear',...
             'ToolTipString','Clear results subpane',...
             'FontSize',FS(9),'ForegroundColor','b',...
-            'Callback',['spm_clusterTDP_ui(''Clear''); ',...
+            'Callback',['spm_ceTDP_cons_ui(''Clear''); ',...
               'spm_input(''!DeleteInputObj''),',...
               'spm_clf(''Satellite'')'],...
             'Interruptible','on','Enable','on',...
@@ -751,7 +751,7 @@ switch lower(Action), case 'setup'                         %-Set up results
         uicontrol('Parent',hReg,'Style','PushButton','String','exit',...
             'ToolTipString','Exit the results section',...
             'FontSize',FS(9),'ForegroundColor','r',...
-            'Callback','spm_clusterTDP_ui(''close'')',...
+            'Callback','spm_ceTDP_cons_ui(''close'')',...
             'Interruptible','on','Enable','on',...
             'Position',[332 050 048 020].*WS);
  
@@ -759,7 +759,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'setupconmenu'                               %-Setup Contrast Menu
     %======================================================================
-    % spm_clusterTDP_ui('SetupConMenu',xSPM,SPM,Finter)
+    % spm_ceTDP_cons_ui('SetupConMenu',xSPM,SPM,Finter)
     if nargin < 4, Finter = 'Interactive'; else Finter = varargin{4}; end
     if nargin < 3, error('Insufficient arguments'), end
     xSPM = varargin{2};
@@ -819,7 +819,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'setupatlasmenu'                                %-Setup Atlas Menu
     %======================================================================
-        % spm_clusterTDP_ui('SetupAtlasMenu',Finter)
+        % spm_ceTDP_cons_ui('SetupAtlasMenu',Finter)
     
         Finter = varargin{2};
         
@@ -831,7 +831,7 @@ switch lower(Action), case 'setup'                         %-Set up results
         list = spm_atlas('List','installed');
         for i=1:numel(list)
             uimenu(hC1,'Label',list(i).name,...
-                'Callback',sprintf('spm_clusterTDP_list(''label'',''%s'');',list(i).name));
+                'Callback',sprintf('spm_ceTDP_cons_list(''label'',''%s'');',list(i).name));
         end
         if isempty(list), set(hC1,'Enable','off'); end
         
@@ -845,7 +845,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'drawxyzgui'                                   %-Draw XYZ GUI area
     %======================================================================
-        % hFxyz = spm_clusterTDP_ui('DrawXYZgui',M,DIM,xSPM,xyz,hReg)
+        % hFxyz = spm_ceTDP_cons_ui('DrawXYZgui',M,DIM,xSPM,xyz,hReg)
         if nargin<6,  hReg=spm_XYZreg('FindReg','Interactive');
         else hReg=varargin{6}; end
         if nargin < 5, xyz=[0;0;0]; else xyz=varargin{5}; end
@@ -881,7 +881,7 @@ switch lower(Action), case 'setup'                         %-Set up results
             'FontSize',FS(10),'BackGroundColor',[.8,.8,1],...
             'HorizontalAlignment','Right',...
             'Tag','hX',...
-            'Callback','spm_clusterTDP_ui(''EdWidCB'')');
+            'Callback','spm_ceTDP_cons_ui(''EdWidCB'')');
  
         uicontrol('Parent',hReg,'Style','Text','String','y =',...
             'Position',[100 010 024 018].*WS,...
@@ -893,7 +893,7 @@ switch lower(Action), case 'setup'                         %-Set up results
             'FontSize',FS(10),'BackGroundColor',[.8,.8,1],...
             'HorizontalAlignment','Right',...
             'Tag','hY',...
-            'Callback','spm_clusterTDP_ui(''EdWidCB'')');
+            'Callback','spm_ceTDP_cons_ui(''EdWidCB'')');
  
         if DIM(3) ~= 1
         uicontrol('Parent',hReg,'Style','Text','String','z =',...
@@ -906,7 +906,7 @@ switch lower(Action), case 'setup'                         %-Set up results
             'FontSize',FS(10),'BackGroundColor',[.8,.8,1],...
             'HorizontalAlignment','Right',...
             'Tag','hZ',...
-            'Callback','spm_clusterTDP_ui(''EdWidCB'')');
+            'Callback','spm_ceTDP_cons_ui(''EdWidCB'')');
         else
         hZ = [];
         end
@@ -948,7 +948,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'edwidcb'                          %-Callback for editable widgets
     %======================================================================
-        % spm_clusterTDP_ui('EdWidCB')
+        % spm_ceTDP_cons_ui('EdWidCB')
  
         hC    = gcbo;
         d     = find(strcmp(get(hC,'Tag'),{'hX','hY','hZ'}));
@@ -970,15 +970,15 @@ switch lower(Action), case 'setup'                         %-Set up results
             UD.xyz = nxyz; set(hFxyz,'UserData',UD)
             if ~isempty(UD.hReg), spm_XYZreg('SetCoords',nxyz,UD.hReg,hFxyz); end
             set(hC,'String',sprintf('%.3f',nxyz(d)))
-            spm_clusterTDP_ui('UpdateSPMval',UD)
+            spm_ceTDP_cons_ui('UpdateSPMval',UD)
         end
  
         
     %======================================================================
     case 'updatespmval'                           %-Update SPM value in GUI
     %======================================================================
-        % spm_clusterTDP_ui('UpdateSPMval',hFxyz)
-        % spm_clusterTDP_ui('UpdateSPMval',UD)
+        % spm_ceTDP_cons_ui('UpdateSPMval',hFxyz)
+        % spm_ceTDP_cons_ui('UpdateSPMval',UD)
         if nargin<2, error('insufficient arguments'), end
         if isstruct(varargin{2}), UD=varargin{2}; else UD = get(varargin{2},'UserData'); end
         i  = spm_XYZreg('FindXYZ',UD.xyz,UD.XYZ);
@@ -989,18 +989,18 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'getcoords'             % Get current co-ordinates from XYZ widget
     %======================================================================
-        % xyz = spm_clusterTDP_ui('GetCoords',hFxyz)
+        % xyz = spm_ceTDP_cons_ui('GetCoords',hFxyz)
         if nargin<2, hFxyz='Interactive'; else hFxyz=varargin{2}; end
-        hFxyz     = spm_clusterTDP_ui('FindXYZframe',hFxyz);
+        hFxyz     = spm_ceTDP_cons_ui('FindXYZframe',hFxyz);
         varargout = {getfield(get(hFxyz,'UserData'),'xyz')};
  
  
     %======================================================================
     case 'setcoords'                       % Set co-ordinates to XYZ widget
     %======================================================================
-        % [xyz,d] = spm_clusterTDP_ui('SetCoords',xyz,hFxyz,hC)
+        % [xyz,d] = spm_ceTDP_cons_ui('SetCoords',xyz,hFxyz,hC)
         if nargin<4, hC=NaN; else hC=varargin{4}; end
-        if nargin<3, hFxyz=spm_clusterTDP_ui('FindXYZframe'); else hFxyz=varargin{3}; end
+        if nargin<3, hFxyz=spm_ceTDP_cons_ui('FindXYZframe'); else hFxyz=varargin{3}; end
         if nargin<2, error('Set co-ords to what!'); else xyz=varargin{2}; end
  
         %-If this is an internal call, then don't do anything
@@ -1026,7 +1026,7 @@ switch lower(Action), case 'setup'                         %-Set up results
         set(UD.hX,'String',sprintf('%.2f',xyz(1)))
         set(UD.hY,'String',sprintf('%.2f',xyz(2)))
         set(UD.hZ,'String',sprintf('%.2f',xyz(3)))
-        spm_clusterTDP_ui('UpdateSPMval',UD);
+        spm_ceTDP_cons_ui('UpdateSPMval',UD);
  
         %-Tell the registry, if we've not been called by the registry...
         %------------------------------------------------------------------
@@ -1042,7 +1042,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'findxyzframe'                                  % Find hFxyz frame
     %======================================================================
-        % hFxyz = spm_clusterTDP_ui('FindXYZframe',h)
+        % hFxyz = spm_ceTDP_cons_ui('FindXYZframe',h)
         % Sorts out hFxyz handles
         if nargin<2, h='Interactive'; else h=varargin{2}; end
         if ischar(h), h=spm_figure('FindWin',h); end
@@ -1056,7 +1056,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'plotui'                               %-GUI for plot manipulation
     %======================================================================
-        % spm_clusterTDP_ui('PlotUi',hAx)
+        % spm_ceTDP_cons_ui('PlotUi',hAx)
         if nargin<2, hAx=gca; else hAx=varargin{2}; end
  
         WS = spm('WinScale');
@@ -1139,14 +1139,14 @@ switch lower(Action), case 'setup'                         %-Set up results
             'ToolTipString','edit axis text annotations',...
             'FontSize',FS(10),...
             'String',{'text','Title','Xlabel','Ylabel'},...
-            'Callback','spm_clusterTDP_ui(''PlotUiCB'')',...
+            'Callback','spm_ceTDP_cons_ui(''PlotUiCB'')',...
             'Interruptible','on','Enable','on',...
             'Position',[230 005 070 020].*WS);
         h5 = uicontrol('Parent',hGraphUIButtsF,'Style','popupmenu',...
             'ToolTipString','change various axes attributes',...
             'FontSize',FS(10),...
             'String',{'attrib','LineWidth','XLim','YLim','handle'},...
-            'Callback','spm_clusterTDP_ui(''PlotUiCB'')',...
+            'Callback','spm_ceTDP_cons_ui(''PlotUiCB'')',...
             'Interruptible','off','Enable','on',...
             'Position',[305 005 070 020].*WS);
  
@@ -1157,15 +1157,15 @@ switch lower(Action), case 'setup'                         %-Set up results
  
         set(hGraphUIbg,'UserData',...
             [hGraphUI,hGraphUIButtsF,h1,h2,h3,h4,h5],...
-            'DeleteFcn','spm_clusterTDP_ui(''Delete'',get(gcbo,''UserData''))')
+            'DeleteFcn','spm_ceTDP_cons_ui(''Delete'',get(gcbo,''UserData''))')
         set(hAx,'UserData',hGraphUIbg,...
-            'DeleteFcn','spm_clusterTDP_ui(''Delete'',get(gcbo,''UserData''))')
+            'DeleteFcn','spm_ceTDP_cons_ui(''Delete'',get(gcbo,''UserData''))')
 
 
     %======================================================================
     case 'plotuicb'
     %======================================================================
-        % spm_clusterTDP_ui('PlotUiCB')
+        % spm_ceTDP_cons_ui('PlotUiCB')
         hPM = gcbo;
         v   = get(hPM,'Value');
         if v==1, return, end
@@ -1204,7 +1204,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'clear'                                    %-Clear results subpane
     %======================================================================
-        % Fgraph = spm_clusterTDP_ui('Clear',F,mode)
+        % Fgraph = spm_ceTDP_cons_ui('Clear',F,mode)
         % mode 1 [default] usual, mode 0 - clear & hide Res stuff, 2 - RNP
  
         if nargin<3, mode=1; else mode=varargin{3}; end
@@ -1264,7 +1264,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'launchmp'                            %-Launch multiplanar toolbox
     %======================================================================
-        % hMP = spm_clusterTDP_ui('LaunchMP',M,DIM,hReg,hBmp)
+        % hMP = spm_ceTDP_cons_ui('LaunchMP',M,DIM,hReg,hBmp)
         if nargin<5, hBmp = gcbo; else hBmp = varargin{5}; end
         hReg = varargin{4};
         DIM  = varargin{3};
@@ -1284,7 +1284,7 @@ switch lower(Action), case 'setup'                         %-Set up results
  
         %-Setup automatic deletion of MultiPlanar on deletion of results controls
         set(hBmp,'Enable','on','UserData',hMP)
-        set(hBmp,'DeleteFcn','spm_clusterTDP_ui(''delete'',get(gcbo,''UserData''))')
+        set(hBmp,'DeleteFcn','spm_ceTDP_cons_ui(''delete'',get(gcbo,''UserData''))')
  
         varargout = {hMP};
  
@@ -1292,7 +1292,7 @@ switch lower(Action), case 'setup'                         %-Set up results
     %======================================================================
     case 'delete'                           %-Delete HandleGraphics objects
     %======================================================================
-        % spm_clusterTDP_ui('Delete',h)
+        % spm_ceTDP_cons_ui('Delete',h)
         h = varargin{2};
         delete(h(ishandle(h)));
  
@@ -1336,8 +1336,8 @@ if ~isempty(xSPM.thresDesc)
 end
 hReg = spm_XYZreg('FindReg',spm_figure('GetWin','Interactive'));
 xyz  = spm_XYZreg('GetCoords',hReg);
-[hReg,xSPM,SPM] = spm_clusterTDP_ui('setup',xSPM2);
-TabDat = spm_clusterTDP_list('List',xSPM,hReg);
+[hReg,xSPM,SPM] = spm_ceTDP_cons_ui('setup',xSPM2);
+TabDat = spm_ceTDP_cons_list('List',xSPM,hReg);
 spm_XYZreg('SetCoords',xyz,hReg);
 assignin('base','hReg',hReg);
 assignin('base','xSPM',xSPM);
@@ -1380,8 +1380,8 @@ switch lower(action)
         
     case 'current'
         [xyzmm,i] = spm_XYZreg('NearestXYZ',...
-            spm_clusterTDP_ui('GetCoords'),xSPM.XYZmm);
-        spm_clusterTDP_ui('SetCoords',xSPM.XYZmm(:,i));
+            spm_ceTDP_cons_ui('GetCoords'),xSPM.XYZmm);
+        spm_ceTDP_cons_ui('SetCoords',xSPM.XYZmm(:,i));
         
         if ~isfield(xSPM,'G')
             A   = spm_clusters(XYZ);
